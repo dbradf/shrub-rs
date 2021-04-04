@@ -141,6 +141,14 @@ pub enum Command {
     BuiltIn(BuiltInCommand),
 }
 
+pub fn function_call(name: &str) -> Command {
+    Command::Function(FunctionCall {
+        func: name.to_string(),
+        vars: None,
+        timeout_secs: None
+    })
+}
+
 fn add_string(params: &mut BTreeMap<String, ParamValue>, key: &str, value: Option<&str>) {
     if let Some(val) = value {
         params.insert(key.to_string(), ParamValue::String(val.to_string()));

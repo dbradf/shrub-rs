@@ -9,6 +9,13 @@ pub struct TaskDependency {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
+pub struct TaskRef {
+    pub name: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub distros: Option<Vec<String>>,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
 pub struct Task {
     pub name: String,
     pub commands: Vec<Command>,
@@ -22,4 +29,13 @@ pub struct Task {
     pub patchable: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub stepback: Option<bool>,
+}
+
+impl Task {
+    pub fn get_reference(&self, distros: Option<Vec<String>>) -> TaskRef {
+        TaskRef {
+            name: self.name.clone(),
+            distros,
+        }
+    }
 }

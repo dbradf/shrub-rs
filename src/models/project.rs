@@ -21,6 +21,8 @@ pub struct EvgModule {
 #[derive(Serialize, Deserialize, Debug)]
 pub struct EvgProject {
     pub buildvariants: Vec<BuildVariant>,
+    pub tasks: Vec<Task>,
+    #[serde(skip_serializing_if = "BTreeMap::is_empty")]
     pub functions: BTreeMap<String, Vec<Command>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub pre: Option<Vec<Command>>,
@@ -31,8 +33,6 @@ pub struct EvgProject {
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub modules: Option<Vec<EvgModule>>,
-
-    pub tasks: Vec<Task>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub stepback: Option<bool>,
