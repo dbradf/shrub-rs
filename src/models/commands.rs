@@ -2,6 +2,23 @@ use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 use crate::models::variant::BuildVariant;
 
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct S3Location {
+    pub bucket: String,
+    pub path: String,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct S3CopyFile {
+    pub source: S3Location,
+    pub destination: S3Location,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub display_name: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub build_variants: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub optional: Option<bool>,
+}
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct KeyValueParam {
@@ -56,10 +73,59 @@ pub struct FunctionCall {
     pub timeout_secs: Option<u64>,
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+pub enum CommandName {
+    #[serde(alias = "archive.targz_extract")]
+    ArchiveTargzExtract,
+    #[serde(alias = "archive.targz_pack")]
+    ArchiveTargzPack,
+    #[serde(alias = "archive.auto_extract")]
+    ArchiveAutoExtract,
+    #[serde(alias = "attach.artifacts")]
+    AttachArtifacts,
+    #[serde(alias = "attach.results")]
+    AttachResults,
+    #[serde(alias = "attach.xunit_results")]
+    AttachXUnitResults,
+    #[serde(alias = "expansions.update")]
+    ExpansionsUpdate,
+    #[serde(alias = "expansions.write")]
+    ExpansionsWrite,
+    #[serde(alias = "generate.tasks")]
+    GenerateTasks,
+    #[serde(alias = "git.get_project")]
+    GitGetProject,
+    #[serde(alias = "gotest.parse_files")]
+    GotestParseFiles,
+    #[serde(alias = "host.create")]
+    HostCreate,
+    #[serde(alias = "host.list")]
+    HostList,
+    #[serde(alias = "json.send")]
+    JsonSend,
+    #[serde(alias = "keyval.inc")]
+    KeyValInc,
+    #[serde(alias = "manifest.load")]
+    ManifestLoad,
+    #[serde(alias = "s3.get")]
+    S3Get,
+    #[serde(alias = "s3.put")]
+    S3Put,
+    #[serde(alias = "s3Copy.copy")]
+    S3Copy,
+    #[serde(alias = "shell.exec")]
+    ShellExec,
+    #[serde(alias = "subprocess.exec")]
+    SubprocessExec,
+    #[serde(alias = "subprocess.scripting")]
+    SubprocessScripting,
+    #[serde(alias = "timeout.update")]
+    TimeoutUpdate,
+}
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct BuiltInCommand {
-    pub command: String,
+    pub command: CommandName,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub params: Option<BTreeMap<String, ParamValue>>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -102,7 +168,7 @@ pub fn archive_targz_extract(path: &str, destination: &str, exclude_files: Optio
     add_string(&mut params, "exclude_files", exclude_files);
 
     BuiltInCommand {
-        command: "archive.targz_extract".to_string(),
+        command: CommandName::ArchiveTargzExtract,
         params: Some(params),
         params_yaml: None,
         command_type: None,
@@ -117,7 +183,7 @@ pub fn archive_targz_pack(target: &str, source_dir: &str, include: &[&str], excl
     add_string(&mut params, "exclude_files", exclude_files);
 
     BuiltInCommand {
-        command: "archive.targz_extract".to_string(),
+        command: CommandName::ArchiveTargzPack,
         params: Some(params),
         params_yaml: None,
         command_type: None,
@@ -130,29 +196,11 @@ pub fn attach_artifacts(files: &[&str], prefix: Option<&str>) -> BuiltInCommand 
     add_string(&mut params, "prefix", prefix);
 
     BuiltInCommand {
-        command: "attach.artifacts".to_string(),
+        command: CommandName::AttachArtifacts,
         params: Some(params),
         params_yaml: None,
         command_type: None,
     }
-}
-
-#[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct S3Location {
-    pub bucket: String,
-    pub path: String,
-}
-
-#[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct S3CopyFile {
-    pub source: S3Location,
-    pub destination: S3Location,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub display_name: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub build_variants: Option<Vec<String>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub optional: Option<bool>,
 }
 
 pub fn s3_copy(aws_key: &str, aws_secret: &str, s3_copy_files: &[S3CopyFile]) -> Command {
@@ -163,7 +211,7 @@ pub fn s3_copy(aws_key: &str, aws_secret: &str, s3_copy_files: &[S3CopyFile]) ->
 
     Command::BuiltIn(
         BuiltInCommand {
-            command: "s3Copy.copy".to_string(),
+            command: CommandName::S3Copy,
             params: Some(params),
             params_yaml: None,
             command_type: None,
@@ -198,7 +246,7 @@ pub fn shell_exec(
 
     Command::BuiltIn(
         BuiltInCommand {
-            command: "shell_exec".to_string(),
+            command: CommandName::ShellExec,
             params: Some(params),
             params_yaml: None,
             command_type: None,

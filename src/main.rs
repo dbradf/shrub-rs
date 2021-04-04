@@ -1,5 +1,3 @@
-use std::collections::HashMap;
-use serde::{Deserialize, Serialize};
 use serde_json;
 use serde_yaml;
 use shrub_rs::models::commands::{archive_targz_extract, archive_targz_pack, Command, ParamValue};
