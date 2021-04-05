@@ -1,8 +1,8 @@
-use serde::{Deserialize, Serialize};
-use crate::models::variant::BuildVariant;
-use std::collections::BTreeMap;
 use crate::models::commands::{Command, CommandType};
 use crate::models::task::Task;
+use crate::models::variant::BuildVariant;
+use serde::{Deserialize, Serialize};
+use std::collections::BTreeMap;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct EvgParameter {

@@ -1,7 +1,6 @@
+use crate::models::task::TaskRef;
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
-use crate::models::task::TaskRef;
-
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct BuildVariant {

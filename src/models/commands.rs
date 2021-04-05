@@ -1,6 +1,6 @@
+use crate::models::variant::BuildVariant;
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
-use crate::models::variant::BuildVariant;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct S3Location {
@@ -145,7 +145,7 @@ pub fn function_call(name: &str) -> Command {
     Command::Function(FunctionCall {
         func: name.to_string(),
         vars: None,
-        timeout_secs: None
+        timeout_secs: None,
     })
 }
 
@@ -162,14 +162,24 @@ fn add_bool(params: &mut BTreeMap<String, ParamValue>, key: &str, value: Option<
 }
 
 fn add_string_list(params: &mut BTreeMap<String, ParamValue>, key: &str, value: &[&str]) {
-    params.insert(key.to_string(), ParamValue::List(value.iter().map(|s| s.to_string()).collect()));
+    params.insert(
+        key.to_string(),
+        ParamValue::List(value.iter().map(|s| s.to_string()).collect()),
+    );
 }
 
 fn add_s3_copy_list(params: &mut BTreeMap<String, ParamValue>, key: &str, value: &[S3CopyFile]) {
-    params.insert(key.to_string(), ParamValue::S3CopyList(value.iter().map(|s| s.clone()).collect()));
+    params.insert(
+        key.to_string(),
+        ParamValue::S3CopyList(value.iter().map(|s| s.clone()).collect()),
+    );
 }
 
-pub fn archive_targz_extract(path: &str, destination: &str, exclude_files: Option<&str>) -> BuiltInCommand {
+pub fn archive_targz_extract(
+    path: &str,
+    destination: &str,
+    exclude_files: Option<&str>,
+) -> BuiltInCommand {
     let mut params = BTreeMap::new();
     add_string(&mut params, "path", Some(path));
     add_string(&mut params, "destination", Some(destination));
@@ -183,7 +193,12 @@ pub fn archive_targz_extract(path: &str, destination: &str, exclude_files: Optio
     }
 }
 
-pub fn archive_targz_pack(target: &str, source_dir: &str, include: &[&str], exclude_files: Option<&str>) -> BuiltInCommand {
+pub fn archive_targz_pack(
+    target: &str,
+    source_dir: &str,
+    include: &[&str],
+    exclude_files: Option<&str>,
+) -> BuiltInCommand {
     let mut params = BTreeMap::new();
     add_string(&mut params, "target", Some(target));
     add_string(&mut params, "source_dir", Some(source_dir));
@@ -217,16 +232,13 @@ pub fn s3_copy(aws_key: &str, aws_secret: &str, s3_copy_files: &[S3CopyFile]) ->
     add_string(&mut params, "aws_secret", Some(aws_secret));
     add_s3_copy_list(&mut params, "s3_copy_files", s3_copy_files);
 
-    Command::BuiltIn(
-        BuiltInCommand {
-            command: CommandName::S3Copy,
-            params: Some(params),
-            params_yaml: None,
-            command_type: None,
-        }
-    )
+    Command::BuiltIn(BuiltInCommand {
+        command: CommandName::S3Copy,
+        params: Some(params),
+        params_yaml: None,
+        command_type: None,
+    })
 }
-
 
 pub fn shell_exec(
     script: &str,
@@ -250,14 +262,16 @@ pub fn shell_exec(
     add_string(&mut params, "shell", shell);
     add_bool(&mut params, "ignore_stdout", ignore_stdout);
     add_bool(&mut params, "ignore_stderr", ignore_stderr);
-    add_bool(&mut params, "redirect_stderr_to_stdout", redirect_stderr_to_stdout);
+    add_bool(
+        &mut params,
+        "redirect_stderr_to_stdout",
+        redirect_stderr_to_stdout,
+    );
 
-    Command::BuiltIn(
-        BuiltInCommand {
-            command: CommandName::ShellExec,
-            params: Some(params),
-            params_yaml: None,
-            command_type: None,
-        }
-    )
+    Command::BuiltIn(BuiltInCommand {
+        command: CommandName::ShellExec,
+        params: Some(params),
+        params_yaml: None,
+        command_type: None,
+    })
 }

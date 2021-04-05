@@ -1,13 +1,14 @@
 use serde_json;
 use serde_yaml;
-use shrub_rs::models::commands::{archive_targz_extract, archive_targz_pack, Command, ParamValue, FunctionCall, function_call};
-use std::fs::read_to_string;
+use shrub_rs::models::commands::{
+    archive_targz_extract, archive_targz_pack, function_call, Command, FunctionCall, ParamValue,
+};
 use shrub_rs::models::project::EvgProject;
 use shrub_rs::models::task::{Task, TaskDependency};
 use shrub_rs::models::variant::BuildVariant;
+use std::fs::read_to_string;
 
 fn build_sub_task(task_name: &str, task_index: usize) -> Task {
-
     Task {
         name: format!("{}_{}", task_name, task_index),
         commands: vec![
@@ -20,17 +21,20 @@ fn build_sub_task(task_name: &str, task_index: usize) -> Task {
         ],
         depends_on: Some(vec![TaskDependency {
             name: "archive_dist_test_debug".to_string(),
-            variant: None
+            variant: None,
         }]),
         exec_timeout_secs: None,
         tags: None,
         patchable: None,
-        stepback: None
+        stepback: None,
     }
 }
 
 fn generate_fuzzer_tasks(task_name: &str, count: usize) -> Vec<Task> {
-    (0..count).into_iter().map(|i| {build_sub_task(task_name, i)}).collect()
+    (0..count)
+        .into_iter()
+        .map(|i| build_sub_task(task_name, i))
+        .collect()
 }
 
 fn create_project(task_name: &str, count: usize) -> EvgProject {
@@ -43,7 +47,7 @@ fn create_project(task_name: &str, count: usize) -> EvgProject {
         batchtime: None,
         expansions: None,
         stepback: None,
-        modules: None
+        modules: None,
     };
 
     EvgProject {
@@ -59,7 +63,7 @@ fn create_project(task_name: &str, count: usize) -> EvgProject {
         oom_tracker: None,
         command_type: None,
         ignore: None,
-        parameters: None
+        parameters: None,
     }
 }
 
