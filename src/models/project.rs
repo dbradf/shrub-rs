@@ -20,7 +20,8 @@ pub struct EvgParameter {
     /// Name of parameter.
     pub key: String,
     /// Default value to use for parameter.
-    pub value: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub value: Option<String>,
     /// Description of parameter.
     pub description: String,
 }
