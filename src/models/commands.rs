@@ -1,16 +1,27 @@
-use crate::models::variant::BuildVariant;
+//! Commands are the basic building blocks of Evergreen tasks.
+//!
+//! They can either be built-in Evergreen command or functions customized for this project.
+//!
+//! See Evergreen [documentation](https://github.com/evergreen-ci/evergreen/wiki/Project-Configuration-Files#commands)
+//! for more details.
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 
+/// AWS S3 Location description.
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct S3Location {
+    /// S3 bucket.
     pub bucket: String,
+    /// Path within S3 bucket.
     pub path: String,
 }
 
+/// Description of how to copy an AWS S3 file.
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct S3CopyFile {
+    /// Location of S3 file to copy.
     pub source: S3Location,
+    /// S3 destination to put copy.
     pub destination: S3Location,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub display_name: Option<String>,
@@ -20,9 +31,12 @@ pub struct S3CopyFile {
     pub optional: Option<bool>,
 }
 
+/// Key-Value pair used to create a parameter map.
 #[derive(Serialize, Deserialize, Debug)]
 pub struct KeyValueParam {
+    /// Key of Key-Value pair.
     pub key: String,
+    /// Value of Key-Value pair.
     pub value: String,
 }
 
@@ -73,12 +87,16 @@ pub struct FunctionCall {
     pub timeout_secs: Option<u64>,
 }
 
+/// Built-in Evergreen Commands.
 #[derive(Debug, Serialize, Deserialize)]
 pub enum CommandName {
+    /// Extract a tar-gzipped file.
     #[serde(alias = "archive.targz_extract")]
     ArchiveTargzExtract,
+    /// Create a tar-gzipped file.
     #[serde(alias = "archive.targz_pack")]
     ArchiveTargzPack,
+
     #[serde(alias = "archive.auto_extract")]
     ArchiveAutoExtract,
     #[serde(alias = "attach.artifacts")]

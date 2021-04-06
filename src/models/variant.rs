@@ -2,45 +2,29 @@ use crate::models::task::TaskRef;
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 
+/// Representation of an Evergreen Build Variant.
 #[derive(Serialize, Deserialize, Debug)]
 pub struct BuildVariant {
+    /// Name of build variant.
     pub name: String,
+    /// List of tasks to add to build variant.
     pub tasks: Vec<TaskRef>,
+    /// Display name of build variant.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub display_name: Option<String>,
+    /// List of distros tasks run on by default.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub run_on: Option<Vec<String>>,
+    /// How frequently tasks should be run.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub batchtime: Option<u64>,
+    /// Map of expansions that should be passed to tasks at runtime.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub expansions: Option<BTreeMap<String, String>>,
+    /// Should failed tasks be run on skipped versions to find their source.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub stepback: Option<bool>,
+    /// List of modules that should be included in tasks for this build variant.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub modules: Option<Vec<String>>,
 }
-
-// def as_dict(self) -> Dict[str, Any]:
-// """Get the dictionary representation of this build variant."""
-// obj: Dict[str, Any] = {
-// "name": self.name,
-// "tasks": self.__get_task_specs(frozenset(self.tasks))
-// + self.__get_task_specs(frozenset(self.task_groups))
-// + self.__get_task_specs(frozenset(self.existing_tasks)),
-// }
-//
-// if self.display_tasks:
-// obj["display_tasks"] = sorted(
-// [dt.as_dict() for dt in self.display_tasks], key=lambda d: d["name"]
-// )
-//
-// add_existing_from_dict(
-// obj,
-// {
-// "expansions": self.expansions,
-// "run_on": self.run_on,
-// "modules": self.modules,
-// "display_name": self.display_name,
-// "batch_time": self.batch_time,
-// },
-// )
