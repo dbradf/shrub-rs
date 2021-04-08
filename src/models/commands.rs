@@ -641,3 +641,11 @@ pub fn function_call(name: &str) -> Command {
         timeout_secs: None,
     })
 }
+
+pub fn function_call_with_params(name: &str, vars: HashMap<String, ParamValue>) -> Command {
+    Command::Function(FunctionCall {
+        func: String::from(name),
+        vars: Some(vars),
+        timeout_secs: None,
+    })
+}
