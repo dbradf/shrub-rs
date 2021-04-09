@@ -46,3 +46,19 @@ pub struct BuildVariant {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub modules: Option<Vec<String>>,
 }
+
+impl Default for BuildVariant {
+    fn default() -> Self {
+        BuildVariant {
+            name: "".to_string(),
+            tasks: vec![],
+            display_name: None,
+            run_on: None,
+            display_tasks: None,
+            batchtime: None,
+            expansions: None,
+            stepback: None,
+            modules: None,
+        }
+    }
+}

@@ -31,7 +31,7 @@ pub struct TaskRef {
 
 /// Definition of an Evergreen task.
 #[derive(Serialize, Deserialize, Debug)]
-pub struct Task {
+pub struct EvgTask {
     /// Name of task being defined.
     pub name: String,
     /// List of command that make up the task.
@@ -53,7 +53,7 @@ pub struct Task {
     pub stepback: Option<bool>,
 }
 
-impl Task {
+impl EvgTask {
     /// Get a reference of this task to include in a build variant.
     ///
     /// * `distros`: List of distros this task should run on.
@@ -61,6 +61,20 @@ impl Task {
         TaskRef {
             name: self.name.clone(),
             distros,
+        }
+    }
+}
+
+impl Default for EvgTask {
+    fn default() -> Self {
+        EvgTask {
+            name: "".to_string(),
+            commands: vec![],
+            depends_on: None,
+            exec_timeout_secs: None,
+            tags: None,
+            patchable: None,
+            stepback: None,
         }
     }
 }

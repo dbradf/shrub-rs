@@ -5,9 +5,10 @@ use shrub_rs::models::commands::{
     function_call, function_call_with_params, ParamValue
 };
 use shrub_rs::models::project::EvgProject;
-use shrub_rs::models::task::{Task, TaskDependency};
+use shrub_rs::models::task::{EvgTask, TaskDependency};
 use shrub_rs::models::variant::{BuildVariant, DisplayTask};
 use std::collections::HashMap;
+use std::env;
 use std::fs::read_to_string;
 
 
@@ -40,7 +41,7 @@ fn test_name_generated_task() {
     assert_eq!("hello_07_variant", name_generated_task("hello", 7, 26, "variant"));
 }
 
-fn build_sub_task(task_name: &str, task_index: usize, options: &Options) -> Task {
+fn build_sub_task(task_name: &str, task_index: usize, options: &Options) -> EvgTask {
     let sub_task_name = name_generated_task(task_name, task_index, options.num_tasks, &options.build_variant);
 
     let mut run_jstestfuzz_vars = HashMap::with_capacity(2);
@@ -70,21 +71,18 @@ fn build_sub_task(task_name: &str, task_index: usize, options: &Options) -> Task
     commands.push(function_call_with_params("run jstestfuzz", run_jstestfuzz_vars));
     commands.push(function_call_with_params("run generated tests", run_tests_vars));
 
-    Task {
+    EvgTask {
         name: sub_task_name,
-        commands: commands,
+        commands,
         depends_on: Some(vec![TaskDependency {
             name: "archive_dist_test_debug".to_string(),
             variant: None,
         }]),
-        exec_timeout_secs: None,
-        tags: None,
-        patchable: None,
-        stepback: None,
+        ..Default::default()
     }
 }
 
-fn generate_fuzzer_tasks(options: &Options) -> Vec<Task> {
+fn generate_fuzzer_tasks(options: &Options) -> Vec<EvgTask> {
     (0..options.num_tasks)
         .into_iter()
         .map(|i| build_sub_task(&options.name, i, options))
@@ -102,36 +100,22 @@ fn create_project(options: &Options) -> EvgProject {
         
 
     let build_variant = BuildVariant {
-        name: "build 1".to_string(),
+        name: options.build_variant.to_string(),
         tasks: task_list.iter().map(|t| t.get_reference(None)).collect(),
         display_tasks: Some(vec![display_task]),
-        display_name: None,
-        run_on: None,
-        batchtime: None,
-        expansions: None,
-        stepback: None,
-        modules: None,
+        ..Default::default()
     };
 
     EvgProject {
         buildvariants: vec![build_variant],
         tasks: task_list,
-        functions: Default::default(),
-        pre: None,
-        post: None,
-        timeout: None,
-        modules: None,
-        stepback: None,
-        pre_error_fails_task: None,
-        oom_tracker: None,
-        command_type: None,
-        ignore: None,
-        parameters: None,
+        ..Default::default()
     }
 }
 
 fn main() {
-    let contents = read_to_string("/home/dbradf/Documents/expansions.yml").unwrap();
+    let fname = env::args().nth(1).expect("Error: Missing expansions file.");
+    let contents = read_to_string(fname).unwrap();
     let options: Options = serde_yaml::from_str(&contents).unwrap();
 
     let p = create_project(&options);

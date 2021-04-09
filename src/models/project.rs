@@ -4,7 +4,7 @@
 //! [documentation](https://github.com/evergreen-ci/evergreen/wiki/Project-Configuration-Files)
 //! for more details on how a projects configuration.
 use crate::models::commands::{Command, CommandType};
-use crate::models::task::Task;
+use crate::models::task::EvgTask;
 use crate::models::variant::BuildVariant;
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
@@ -45,7 +45,7 @@ pub struct EvgProject {
     /// List of build variants belonging to this project.
     pub buildvariants: Vec<BuildVariant>,
     /// List of task definitions.
-    pub tasks: Vec<Task>,
+    pub tasks: Vec<EvgTask>,
     /// Definitions of functions belonging to this project.
     #[serde(skip_serializing_if = "BTreeMap::is_empty")]
     pub functions: BTreeMap<String, Vec<Command>>,
@@ -81,4 +81,24 @@ pub struct EvgProject {
     /// Parameters that can be specified to customize patch build functionality.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub parameters: Option<Vec<EvgParameter>>,
+}
+
+impl Default for EvgProject {
+    fn default() -> Self {
+        EvgProject {
+            buildvariants: vec![],
+            tasks: vec![],
+            functions: Default::default(),
+            pre: None,
+            post: None,
+            timeout: None,
+            modules: None,
+            stepback: None,
+            pre_error_fails_task: None,
+            oom_tracker: None,
+            command_type: None,
+            ignore: None,
+            parameters: None,
+        }
+    }
 }
