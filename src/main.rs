@@ -1,4 +1,4 @@
-use serde::{de::value::BoolDeserializer, Deserialize};
+use serde::Deserialize;
 use serde_json;
 use serde_yaml;
 use shrub_rs::models::commands::{function_call, function_call_with_params, ParamValue};
@@ -17,18 +17,25 @@ enum BoolValue {
 }
 
 #[derive(Debug, Deserialize)]
+#[serde(untagged)]
+enum NumValue {
+    Number(u64),
+    String(String),
+}
+
+#[derive(Debug, Deserialize)]
 struct Options {
-    num_files: usize,
-    num_tasks: usize,
+    num_files: NumValue,
+    num_tasks: NumValue,
     resmoke_args: String,
     npm_command: String,
     jstestfuzz_vars: String,
     name: String,
     build_variant: String,
     continue_on_failure: BoolValue,
-    resmoke_jobs_max: u64,
+    resmoke_jobs_max: NumValue,
     should_shuffle: BoolValue,
-    timeout_secs: u64,
+    timeout_secs: NumValue,
     use_multiversion: Option<String>,
     suite: String,
 }
@@ -40,6 +47,13 @@ fn get_bool_value(bool_value: &BoolValue) -> bool {
     }
 }
 
+fn get_u64_value(num_value: &NumValue) -> u64 {
+    match num_value {
+        NumValue::Number(n) => *n,
+        NumValue::String(s) => s.parse::<u64>().unwrap(),
+    }
+}
+
 impl Options {
     pub fn continue_on_failure(&self) -> bool {
         get_bool_value(&self.continue_on_failure)
@@ -47,6 +61,22 @@ impl Options {
 
     pub fn should_shuffle(&self) -> bool {
         get_bool_value(&self.should_shuffle)
+    }
+
+    pub fn timeout_secs(&self) -> u64 {
+        get_u64_value(&self.timeout_secs)
+    }
+
+    pub fn resmoke_jobs_max(&self) -> u64 {
+        get_u64_value(&self.resmoke_jobs_max)
+    }
+
+    pub fn num_files(&self) -> u64 {
+        get_u64_value(&self.num_files)
+    }
+
+    pub fn num_tasks(&self) -> u64 {
+        get_u64_value(&self.num_tasks)
     }
 }
 
@@ -80,7 +110,7 @@ fn build_sub_task(task_name: &str, task_index: usize, options: &Options) -> EvgT
     let sub_task_name = name_generated_task(
         task_name,
         task_index,
-        options.num_tasks,
+        options.num_tasks() as usize,
         &options.build_variant,
     );
 
@@ -89,7 +119,7 @@ fn build_sub_task(task_name: &str, task_index: usize, options: &Options) -> EvgT
         String::from("jstestfuzz_vars"),
         ParamValue::String(format!(
             "--numGeneratedFiles {} {}",
-            options.num_files, options.jstestfuzz_vars
+            options.num_files(), options.jstestfuzz_vars
         )),
     );
     run_jstestfuzz_vars.insert(
@@ -109,7 +139,7 @@ fn build_sub_task(task_name: &str, task_index: usize, options: &Options) -> EvgT
     );
     run_tests_vars.insert(
         String::from("resmoke_jobs_max"),
-        ParamValue::Number(options.resmoke_jobs_max),
+        ParamValue::Number(options.resmoke_jobs_max()),
     );
     run_tests_vars.insert(
         String::from("should_shuffle"),
@@ -123,7 +153,7 @@ fn build_sub_task(task_name: &str, task_index: usize, options: &Options) -> EvgT
     }
     run_tests_vars.insert(
         String::from("timeout_secs"),
-        ParamValue::Number(options.timeout_secs),
+        ParamValue::Number(options.timeout_secs()),
     );
     run_tests_vars.insert(
         String::from("task"),
@@ -157,9 +187,9 @@ fn build_sub_task(task_name: &str, task_index: usize, options: &Options) -> EvgT
 }
 
 fn generate_fuzzer_tasks(options: &Options) -> Vec<EvgTask> {
-    (0..options.num_tasks)
+    (0..options.num_tasks())
         .into_iter()
-        .map(|i| build_sub_task(&options.name, i, options))
+        .map(|i| build_sub_task(&options.name, i as usize, options))
         .collect()
 }
 
