@@ -2,7 +2,6 @@ use crate::models::task::TaskRef;
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 
-
 #[derive(Serialize, Deserialize, Debug)]
 pub struct DisplayTask {
     pub name: String,

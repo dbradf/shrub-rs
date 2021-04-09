@@ -323,7 +323,7 @@ pub struct S3PutParams {
 
     /// List of globs to indicate files to upload.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub local_files_include_filter: Option<Vec<String>>,    
+    pub local_files_include_filter: Option<Vec<String>>,
 
     /// Path to where to start looking for `local_files_include_filter`.
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -390,7 +390,7 @@ pub struct ShellExecParams {
     /// Map of environment variables and their values.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub env: Option<HashMap<String, String>>,
-    
+
     /// If true, add all expansions to shell's env.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub add_expansions_to_env: Option<bool>,
@@ -454,7 +454,7 @@ pub struct SubprocessExecParams {
     /// Map of environment variables and their values.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub env: Option<HashMap<String, String>>,
-    
+
     /// If true, add all expansions to shell's env.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub add_expansions_to_env: Option<bool>,

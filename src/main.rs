@@ -1,9 +1,7 @@
-use serde::Deserialize;
+use serde::{de::value::BoolDeserializer, Deserialize};
 use serde_json;
 use serde_yaml;
-use shrub_rs::models::commands::{
-    function_call, function_call_with_params, ParamValue
-};
+use shrub_rs::models::commands::{function_call, function_call_with_params, ParamValue};
 use shrub_rs::models::project::EvgProject;
 use shrub_rs::models::task::{EvgTask, TaskDependency};
 use shrub_rs::models::variant::{BuildVariant, DisplayTask};
@@ -11,6 +9,12 @@ use std::collections::HashMap;
 use std::env;
 use std::fs::read_to_string;
 
+#[derive(Debug, Deserialize)]
+#[serde(untagged)]
+enum BoolValue {
+    Boolean(bool),
+    String(String),
+}
 
 #[derive(Debug, Deserialize)]
 struct Options {
@@ -21,55 +25,125 @@ struct Options {
     jstestfuzz_vars: String,
     name: String,
     build_variant: String,
-    continue_on_failure: bool,
+    continue_on_failure: BoolValue,
     resmoke_jobs_max: u64,
-    should_shuffle: bool,
+    should_shuffle: BoolValue,
     timeout_secs: u64,
     use_multiversion: Option<String>,
     suite: String,
 }
 
-fn name_generated_task(parent_name: &str, task_index: usize, total_tasks: usize, variant: &str) -> String {
+fn get_bool_value(bool_value: &BoolValue) -> bool {
+    match bool_value {
+        BoolValue::Boolean(b) => *b,
+        BoolValue::String(s) => (s == "true" || s == "True"),
+    }
+}
+
+impl Options {
+    pub fn continue_on_failure(&self) -> bool {
+        get_bool_value(&self.continue_on_failure)
+    }
+
+    pub fn should_shuffle(&self) -> bool {
+        get_bool_value(&self.should_shuffle)
+    }
+}
+
+fn name_generated_task(
+    parent_name: &str,
+    task_index: usize,
+    total_tasks: usize,
+    variant: &str,
+) -> String {
     let index_width = (total_tasks as f32).log10().ceil() as usize;
-    format!("{}_{:0fill$}_{}", parent_name, task_index, variant, fill = index_width)
-} 
+    format!(
+        "{}_{:0fill$}_{}",
+        parent_name,
+        task_index,
+        variant,
+        fill = index_width
+    )
+}
 
 #[test]
 fn test_name_generated_task() {
     assert_eq!("hello_0001_", name_generated_task("hello", 1, 1200, ""));
     assert_eq!("hello_1_", name_generated_task("hello", 1, 8, ""));
-    assert_eq!("hello_07_variant", name_generated_task("hello", 7, 26, "variant"));
+    assert_eq!(
+        "hello_07_variant",
+        name_generated_task("hello", 7, 26, "variant")
+    );
 }
 
 fn build_sub_task(task_name: &str, task_index: usize, options: &Options) -> EvgTask {
-    let sub_task_name = name_generated_task(task_name, task_index, options.num_tasks, &options.build_variant);
+    let sub_task_name = name_generated_task(
+        task_name,
+        task_index,
+        options.num_tasks,
+        &options.build_variant,
+    );
 
     let mut run_jstestfuzz_vars = HashMap::with_capacity(2);
-    run_jstestfuzz_vars.insert(String::from("jstestfuzz_vars"), ParamValue::String(format!("--numGeneratedFiles {} {}", options.num_files, options.jstestfuzz_vars)));
-    run_jstestfuzz_vars.insert(String::from("npm_command"), ParamValue::String(options.npm_command.to_string()));
+    run_jstestfuzz_vars.insert(
+        String::from("jstestfuzz_vars"),
+        ParamValue::String(format!(
+            "--numGeneratedFiles {} {}",
+            options.num_files, options.jstestfuzz_vars
+        )),
+    );
+    run_jstestfuzz_vars.insert(
+        String::from("npm_command"),
+        ParamValue::String(options.npm_command.to_string()),
+    );
 
     let suite_args = format!("--suites={}", options.suite);
     let mut run_tests_vars = HashMap::with_capacity(7);
-    run_tests_vars.insert(String::from("continue_on_failure"), ParamValue::Bool(options.continue_on_failure));
-    run_tests_vars.insert(String::from("resmoke_args"), ParamValue::String(format!("{} {}", suite_args, options.resmoke_args)));
-    run_tests_vars.insert(String::from("resmoke_jobs_max"), ParamValue::Number(options.resmoke_jobs_max));
-    run_tests_vars.insert(String::from("should_shuffle"), ParamValue::Bool(options.should_shuffle));
+    run_tests_vars.insert(
+        String::from("continue_on_failure"),
+        ParamValue::Bool(options.continue_on_failure()),
+    );
+    run_tests_vars.insert(
+        String::from("resmoke_args"),
+        ParamValue::String(format!("{} {}", suite_args, options.resmoke_args)),
+    );
+    run_tests_vars.insert(
+        String::from("resmoke_jobs_max"),
+        ParamValue::Number(options.resmoke_jobs_max),
+    );
+    run_tests_vars.insert(
+        String::from("should_shuffle"),
+        ParamValue::Bool(options.should_shuffle()),
+    );
     if let Some(task_path) = &options.use_multiversion {
-        run_tests_vars.insert(String::from("task_path_suffix"), ParamValue::String(task_path.to_string()));
+        run_tests_vars.insert(
+            String::from("task_path_suffix"),
+            ParamValue::String(task_path.to_string()),
+        );
     }
-    run_tests_vars.insert(String::from("timeout_secs"), ParamValue::Number(options.timeout_secs));
-    run_tests_vars.insert(String::from("task"), ParamValue::String(options.name.to_string()));
+    run_tests_vars.insert(
+        String::from("timeout_secs"),
+        ParamValue::Number(options.timeout_secs),
+    );
+    run_tests_vars.insert(
+        String::from("task"),
+        ParamValue::String(options.name.to_string()),
+    );
 
-    let mut commands = vec![
-            function_call("do setup"),
-    ];
+    let mut commands = vec![function_call("do setup")];
     if let Some(_) = options.use_multiversion {
         commands.push(function_call("configure evergreen api credentials"));
         commands.push(function_call("do multiversion setup"));
     }
     commands.push(function_call("setup jstestfuzz"));
-    commands.push(function_call_with_params("run jstestfuzz", run_jstestfuzz_vars));
-    commands.push(function_call_with_params("run generated tests", run_tests_vars));
+    commands.push(function_call_with_params(
+        "run jstestfuzz",
+        run_jstestfuzz_vars,
+    ));
+    commands.push(function_call_with_params(
+        "run generated tests",
+        run_tests_vars,
+    ));
 
     EvgTask {
         name: sub_task_name,
@@ -97,7 +171,6 @@ fn create_project(options: &Options) -> EvgProject {
         name: options.name.clone(),
         execution_tasks,
     };
-        
 
     let build_variant = BuildVariant {
         name: options.build_variant.to_string(),
@@ -126,7 +199,7 @@ fn main() {
     // println!("{}", serde_json::to_string(&c).unwrap());
 
     // let contents = read_to_string("/home/dbradf/Documents/evergreen_parsed.yml").unwrap();
-    
+
     // let p: EvgProject = serde_yaml::from_str(&contents).unwrap();
     // println!("Build Variants: {}", p.buildvariants.len());
     // for (name, def) in p.functions {
