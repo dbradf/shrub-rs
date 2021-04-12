@@ -7,7 +7,7 @@ use crate::models::commands::{Command, CommandType};
 use crate::models::task::EvgTask;
 use crate::models::variant::BuildVariant;
 use serde::{Deserialize, Serialize};
-use std::collections::BTreeMap;
+use std::collections::HashMap;
 
 /// Description of an evergreen parameter.
 ///
@@ -47,8 +47,8 @@ pub struct EvgProject {
     /// List of task definitions.
     pub tasks: Vec<EvgTask>,
     /// Definitions of functions belonging to this project.
-    #[serde(skip_serializing_if = "BTreeMap::is_empty")]
-    pub functions: BTreeMap<String, Vec<Command>>,
+    #[serde(skip_serializing_if = "HashMap::is_empty")]
+    pub functions: HashMap<String, Vec<Command>>,
     /// List of commands to run at the start of each task.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub pre: Option<Vec<Command>>,

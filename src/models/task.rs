@@ -20,7 +20,7 @@ pub struct TaskDependency {
 }
 
 /// Reference to a task that is being added to a build variant.
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct TaskRef {
     /// Name of task.
     pub name: String,

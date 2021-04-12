@@ -2,14 +2,14 @@ use crate::models::task::TaskRef;
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct DisplayTask {
     pub name: String,
     pub execution_tasks: Vec<String>,
 }
 
 /// Representation of an Evergreen Build Variant.
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct BuildVariant {
     /// Name of build variant.
     pub name: String,

@@ -34,7 +34,7 @@ pub struct S3CopyFile {
 }
 
 /// Key-Value pair used to create a parameter map.
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct KeyValueParam {
     /// Key of Key-Value pair.
     pub key: String,
@@ -42,7 +42,7 @@ pub struct KeyValueParam {
     pub value: String,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(untagged)]
 pub enum ParamValue {
     Bool(bool),
@@ -54,7 +54,7 @@ pub enum ParamValue {
     S3CopyList(Vec<S3CopyFile>),
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(rename_all = "lowercase")]
 pub enum ScriptingHarness {
     Python,
@@ -63,7 +63,7 @@ pub enum ScriptingHarness {
     Roswell,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(rename_all = "lowercase")]
 pub enum CommandType {
     Test,
@@ -72,7 +72,7 @@ pub enum CommandType {
 }
 
 /// Visibility of files in S3.
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(rename_all = "lowercase")]
 pub enum S3Visibility {
     /// Allows anyone to see the file.
@@ -88,14 +88,14 @@ pub enum S3Visibility {
     None,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(rename_all = "lowercase")]
 pub enum CloudProvider {
     EC2,
     Docker,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct FunctionCall {
     pub func: String,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -105,7 +105,7 @@ pub struct FunctionCall {
 }
 
 /// Parameters describing how to extract files from a gzipped tarball.
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct ArchiveTargzExtractParams {
     /// Path to tarball to extract.
     pub path: String,
@@ -117,7 +117,7 @@ pub struct ArchiveTargzExtractParams {
 }
 
 /// Parameters describing how to create a gzipped tarball.
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct ArchiveTargzPackParams {
     /// The tgz files that will be created.
     pub target: String,
@@ -131,7 +131,7 @@ pub struct ArchiveTargzPackParams {
 }
 
 /// Parameters describing how to attach artifacts to a task.
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct AttachArtifactsParams {
     /// An array of gitignore file globs to attach.
     pub files: Vec<String>,
@@ -141,14 +141,14 @@ pub struct AttachArtifactsParams {
 }
 
 /// Parameters describing how to attach Evergreen test results format to task.
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct AttachResultsParams {
     /// Path to a json file to parse and upload.
     pub file_location: String,
 }
 
 /// Parameters describing how to attach XUnit test results format to task.
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct AttachXUnitResultsParams {
     /// Path to a xunit file to parse and upload.
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -160,7 +160,7 @@ pub struct AttachXUnitResultsParams {
 }
 
 /// Parameters describing how to update task expansions at runtime.
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct ExpansionsUpdateParams {
     /// key-value pairs for updating the task's expansions.
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -179,7 +179,7 @@ pub struct ExpansionsUpdateParams {
 }
 
 /// Parameters describing how to write task's expansions to a file.
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct ExpansionsWriteParams {
     /// Path to file to write expansions to.
     pub file: String,
@@ -190,14 +190,14 @@ pub struct ExpansionsWriteParams {
 }
 
 /// Parameters describing how to generate dynamic tasks.
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct GenerateTasksParams {
     /// List of json files to generate tasks from.
     pub files: Vec<String>,
 }
 
 /// Parameters describing how to clone tracked project and apply revision associated with task.
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct GitGetProjectParams {
     /// Directory to clone repository into.
     pub directory: String,
@@ -212,14 +212,14 @@ pub struct GitGetProjectParams {
 }
 
 /// Parameters describing how to parse gotest results and attach them to the task.
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct GotestParseFilesParams {
     /// List of globs to parse and attach.
     pub files: Vec<String>,
 }
 
 /// Parameters describing how to start a new host from a task.
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct HostCreateParams {
     /// Evergreen distro to start.
     pub distro: String,
@@ -232,7 +232,7 @@ pub struct HostCreateParams {
 }
 
 /// Parameters describing how to get information about hosts previously created.
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct HostListParams {
     /// If `wait` is set, the number of hosts to wait to be running before returning.
     pub num_hosts: u64,
@@ -249,7 +249,7 @@ pub struct HostListParams {
 }
 
 /// Parameters describing how to save json-formatted task data.
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct JsonSendParams {
     /// Json file to save.
     pub file: String,
@@ -259,14 +259,14 @@ pub struct JsonSendParams {
 }
 
 /// Parameters describing how to increment a key val.
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct KeyValIncParams {
     pub destination: String,
     pub key: String,
 }
 
 /// Parameters describing how to send perf results to cedar.
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct PerfSendParams {
     /// Json or yaml file containing test results.
     pub file: String,
@@ -289,7 +289,7 @@ pub struct PerfSendParams {
 }
 
 /// Parameters describing how to download a file from S3.
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct S3GetParams {
     /// Local file to save.
     pub local_file: Option<String>,
@@ -315,7 +315,7 @@ pub struct S3GetParams {
 }
 
 /// Parameters describing how to upload a file from S3.
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct S3PutParams {
     /// Local file to upload.
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -365,7 +365,7 @@ pub struct S3PutParams {
 }
 
 /// Parameters describing how to copy an S3 file.
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct S3CopyParams {
     /// S3 Files to copy.
     pub s3_copy_files: Vec<S3CopyFile>,
@@ -378,7 +378,7 @@ pub struct S3CopyParams {
 }
 
 /// Parameters describing how to run a shell script.
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct ShellExecParams {
     /// Script to run.
     pub script: String,
@@ -433,7 +433,7 @@ pub struct ShellExecParams {
 }
 
 /// Parameters describing how to run a binary file.
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct SubprocessExecParams {
     /// Binary to run.
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -500,7 +500,7 @@ pub struct SubprocessExecParams {
     pub add_to_path: Option<Vec<String>>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(untagged)]
 pub enum TimeoutValue {
     Int(u64),
@@ -508,7 +508,7 @@ pub enum TimeoutValue {
 }
 
 /// Parameters describing how to set timeouts for the current task.
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct TimeoutUpdateParams {
     /// Set the maximum time a task can run.
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -520,114 +520,114 @@ pub struct TimeoutUpdateParams {
 }
 
 /// Built-in Evergreen Commands.
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(tag = "command", content = "params")]
 pub enum CommandName {
     /// Extract files from a a gzipped tarball.
-    #[serde(alias = "archive.targz_extract")]
+    #[serde(rename = "archive.targz_extract")]
     ArchiveTargzExtract(ArchiveTargzExtractParams),
 
     /// Create a tar-gzipped file.
-    #[serde(alias = "archive.targz_pack")]
+    #[serde(rename = "archive.targz_pack")]
     ArchiveTargzPack(ArchiveTargzPackParams),
 
-    #[serde(alias = "archive.auto_extract")]
+    #[serde(rename = "archive.auto_extract")]
     ArchiveAutoExtract,
 
     /// Upload files to be include in the "Files" section of a task.
-    #[serde(alias = "attach.artifacts")]
+    #[serde(rename = "attach.artifacts")]
     AttachArtifacts(AttachArtifactsParams),
 
     /// Parse test results in Evergreen's JSON test format and attach to task.
-    #[serde(alias = "attach.results")]
+    #[serde(rename = "attach.results")]
     AttachResults(AttachResultsParams),
 
     /// Parse test results in XUnit format and attach to task.
-    #[serde(alias = "attach.xunit_results")]
+    #[serde(rename = "attach.xunit_results")]
     AttachXUnitResults(AttachXUnitResultsParams),
 
     /// Update the task's expansions at runtime.
-    #[serde(alias = "expansions.update")]
+    #[serde(rename = "expansions.update")]
     ExpansionsUpdate(ExpansionsUpdateParams),
 
     /// Write the task's expansions to a file.
-    #[serde(alias = "expansions.write")]
+    #[serde(rename = "expansions.write")]
     ExpansionsWrite(ExpansionsWriteParams),
 
     /// Dynamically generate tasks from a provided json file.
-    #[serde(alias = "generate.tasks")]
+    #[serde(rename = "generate.tasks")]
     GenerateTasks(GenerateTasksParams),
 
     /// Clone the tracked project and apply revision associated with task.
-    #[serde(alias = "git.get_project")]
+    #[serde(rename = "git.get_project")]
     GitGetProject(GitGetProjectParams),
 
     /// Parse gotest results and attach them to the task.
-    #[serde(alias = "gotest.parse_files")]
+    #[serde(rename = "gotest.parse_files")]
     GotestParseFiles(GotestParseFilesParams),
 
     /// Start a new evergreen host.
-    #[serde(alias = "host.create")]
+    #[serde(rename = "host.create")]
     HostCreate(HostCreateParams),
 
     /// Get information about hosts create with 'hosts.create'.
-    #[serde(alias = "host.list")]
+    #[serde(rename = "host.list")]
     HostList(HostListParams),
 
     /// Save json-formatted task data to the task.
-    #[serde(alias = "json.send")]
+    #[serde(rename = "json.send")]
     JsonSend(JsonSendParams),
 
-    #[serde(alias = "keyval.inc")]
+    #[serde(rename = "keyval.inc")]
     KeyValInc(KeyValIncParams),
 
     /// Update project expansions with the manifest.
-    #[serde(alias = "manifest.load")]
+    #[serde(rename = "manifest.load")]
     ManifestLoad,
 
     /// Send performance test data to Cedar.
-    #[serde(alias = "perf.send")]
+    #[serde(rename = "perf.send")]
     PerfSend(PerfSendParams),
 
     /// Download a file from S3.
-    #[serde(alias = "s3.get")]
+    #[serde(rename = "s3.get")]
     S3Get(S3GetParams),
 
     /// Upload a file to S3.
-    #[serde(alias = "s3.put")]
+    #[serde(rename = "s3.put")]
     S3Put(S3PutParams),
 
     /// Copies a file from one S3 location to another.
-    #[serde(alias = "s3Copy.copy")]
+    #[serde(rename = "s3Copy.copy")]
     S3Copy(S3CopyParams),
 
     /// Execute the provided shell script.
-    #[serde(alias = "shell.exec")]
+    #[serde(rename = "shell.exec")]
     ShellExec(ShellExecParams),
 
     /// Execute the specified binary.
-    #[serde(alias = "subprocess.exec")]
+    #[serde(rename = "subprocess.exec")]
     SubprocessExec(SubprocessExecParams),
 
-    #[serde(alias = "subprocess.scripting")]
+    #[serde(rename = "subprocess.scripting")]
     SubprocessScripting,
 
     /// Set the timeouts for the current task.
-    #[serde(alias = "timeout.update")]
+    #[serde(rename = "timeout.update")]
     TimeoutUpdate(TimeoutUpdateParams),
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct BuiltInCommand {
     #[serde(flatten)]
     pub command: CommandName,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub params_yaml: Option<String>,
-    #[serde(alias = "type", skip_serializing_if = "Option::is_none")]
+    #[serde(rename = "type", skip_serializing_if = "Option::is_none")]
     pub command_type: Option<CommandType>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(untagged)]
 pub enum Command {
     Function(FunctionCall),
