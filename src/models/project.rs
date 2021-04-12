@@ -1,9 +1,10 @@
-//! Evergreen Project are the top level configuration for an Evergreen project.
+//! Evergreen Project are the top level configuration for an Evergreen landscape.
 //!
 //! See Evergreen's
 //! [documentation](https://github.com/evergreen-ci/evergreen/wiki/Project-Configuration-Files)
 //! for more details on how a projects configuration.
-use crate::models::commands::{Command, CommandType};
+use crate::models::builtin::CommandType;
+use crate::models::commands::Command;
 use crate::models::task::EvgTask;
 use crate::models::variant::BuildVariant;
 use serde::{Deserialize, Serialize};
@@ -26,7 +27,7 @@ pub struct EvgParameter {
     pub description: String,
 }
 
-/// Description of a module to include in a project.
+/// Description of a module to include in a landscape.
 #[derive(Serialize, Deserialize, Debug)]
 pub struct EvgModule {
     /// Name of module being defined.
@@ -42,11 +43,11 @@ pub struct EvgModule {
 /// Description of an Evergreen Project.
 #[derive(Serialize, Deserialize, Debug)]
 pub struct EvgProject {
-    /// List of build variants belonging to this project.
+    /// List of build variants belonging to this landscape.
     pub buildvariants: Vec<BuildVariant>,
     /// List of task definitions.
     pub tasks: Vec<EvgTask>,
-    /// Definitions of functions belonging to this project.
+    /// Definitions of functions belonging to this landscape.
     #[serde(skip_serializing_if = "HashMap::is_empty")]
     pub functions: HashMap<String, Vec<Command>>,
     /// List of commands to run at the start of each task.
@@ -59,7 +60,7 @@ pub struct EvgProject {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub timeout: Option<Vec<Command>>,
 
-    /// Description of modules to include in this project.
+    /// Description of modules to include in this landscape.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub modules: Option<Vec<EvgModule>>,
 
@@ -69,7 +70,7 @@ pub struct EvgProject {
     /// Describe if failures in `pre` commands should cause a task to be failed.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub pre_error_fails_task: Option<bool>,
-    /// Describe if evergreen should track out of memory failure in this project.
+    /// Describe if evergreen should track out of memory failure in this landscape.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub oom_tracker: Option<bool>,
     /// Describe the type of failure a task failure should trigger.

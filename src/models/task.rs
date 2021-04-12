@@ -5,7 +5,7 @@
 //! [built-in evergreen commands](https://github.com/evergreen-ci/evergreen/wiki/Project-Commands)
 //! or
 //! [functions](https://github.com/evergreen-ci/evergreen/wiki/Project-Configuration-Files#functions)
-//! unique to the project.
+//! unique to the landscape.
 use crate::models::commands::Command;
 use serde::{Deserialize, Serialize};
 
