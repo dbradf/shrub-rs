@@ -3,8 +3,8 @@
 //! See Evergreen's
 //! [documentation](https://github.com/evergreen-ci/evergreen/wiki/Project-Configuration-Files)
 //! for more details on how a projects configuration.
-use crate::models::builtin::CommandType;
-use crate::models::commands::Command;
+use crate::models::builtin::EvgCommandType;
+use crate::models::commands::EvgCommand;
 use crate::models::task::EvgTask;
 use crate::models::variant::BuildVariant;
 use serde::{Deserialize, Serialize};
@@ -49,16 +49,16 @@ pub struct EvgProject {
     pub tasks: Vec<EvgTask>,
     /// Definitions of functions belonging to this landscape.
     #[serde(skip_serializing_if = "HashMap::is_empty")]
-    pub functions: HashMap<String, Vec<Command>>,
+    pub functions: HashMap<String, Vec<EvgCommand>>,
     /// List of commands to run at the start of each task.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub pre: Option<Vec<Command>>,
+    pub pre: Option<Vec<EvgCommand>>,
     /// List of commands to run at the end of each task.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub post: Option<Vec<Command>>,
+    pub post: Option<Vec<EvgCommand>>,
     /// List of commands to run whenever a task hits a timeout.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub timeout: Option<Vec<Command>>,
+    pub timeout: Option<Vec<EvgCommand>>,
 
     /// Description of modules to include in this landscape.
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -75,7 +75,7 @@ pub struct EvgProject {
     pub oom_tracker: Option<bool>,
     /// Describe the type of failure a task failure should trigger.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub command_type: Option<CommandType>,
+    pub command_type: Option<EvgCommandType>,
     /// List of globs that describe file changes that won't trigger a new build.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub ignore: Option<Vec<String>>,

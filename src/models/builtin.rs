@@ -3,11 +3,15 @@ use crate::models::params::{KeyValueParam, S3CopyFile};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
+/// Describe how task failures should be indicated.
 #[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(rename_all = "lowercase")]
-pub enum CommandType {
+pub enum EvgCommandType {
+    /// Failures should indicate a "test" failure.
     Test,
+    /// Failures should indicate a "system" failure.
     System,
+    /// Failures should indicate a "setup" failure.
     Setup,
 }
 
@@ -28,10 +32,13 @@ pub enum S3Visibility {
     None,
 }
 
+/// Describe which cloud provider should be used.
 #[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(rename_all = "lowercase")]
 pub enum CloudProvider {
+    /// Use Amazon EC2.
     EC2,
+    /// Use docker.
     Docker,
 }
 
@@ -462,7 +469,7 @@ pub struct TimeoutUpdateParams {
 /// Built-in Evergreen Commands.
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(tag = "command", content = "params")]
-pub enum CommandName {
+pub enum EvgCommandSpec {
     /// Extract files from a a gzipped tarball.
     #[serde(rename = "archive.targz_extract")]
     ArchiveTargzExtract(ArchiveTargzExtractParams),
@@ -559,10 +566,14 @@ pub enum CommandName {
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct BuiltInCommand {
+    /// Description the built-in command to run.
     #[serde(flatten)]
-    pub command: CommandName,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub params_yaml: Option<String>,
+    pub command: EvgCommandSpec,
+
+    /// How command status should be indicated.
     #[serde(rename = "type", skip_serializing_if = "Option::is_none")]
-    pub command_type: Option<CommandType>,
+    pub command_type: Option<EvgCommandType>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    params_yaml: Option<String>,
 }

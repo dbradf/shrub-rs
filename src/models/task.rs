@@ -6,7 +6,7 @@
 //! or
 //! [functions](https://github.com/evergreen-ci/evergreen/wiki/Project-Configuration-Files#functions)
 //! unique to the landscape.
-use crate::models::commands::Command;
+use crate::models::commands::EvgCommand;
 use serde::{Deserialize, Serialize};
 
 /// Description of a depedency for a task.
@@ -35,7 +35,7 @@ pub struct EvgTask {
     /// Name of task being defined.
     pub name: String,
     /// List of command that make up the task.
-    pub commands: Vec<Command>,
+    pub commands: Vec<EvgCommand>,
     /// List of other tasks that need to be completed before this is done.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub depends_on: Option<Vec<TaskDependency>>,

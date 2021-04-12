@@ -20,21 +20,21 @@ pub struct FunctionCall {
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(untagged)]
-pub enum Command {
+pub enum EvgCommand {
     Function(FunctionCall),
     BuiltIn(BuiltInCommand),
 }
 
-pub fn function_call(name: &str) -> Command {
-    Command::Function(FunctionCall {
+pub fn fn_call(name: &str) -> EvgCommand {
+    EvgCommand::Function(FunctionCall {
         func: name.to_string(),
         vars: None,
         timeout_secs: None,
     })
 }
 
-pub fn function_call_with_params(name: &str, vars: HashMap<String, ParamValue>) -> Command {
-    Command::Function(FunctionCall {
+pub fn fn_call_with_params(name: &str, vars: HashMap<String, ParamValue>) -> EvgCommand {
+    EvgCommand::Function(FunctionCall {
         func: String::from(name),
         vars: Some(vars),
         timeout_secs: None,
