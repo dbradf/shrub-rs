@@ -16,7 +16,7 @@ use std::collections::HashMap;
 /// See Evergreen's
 /// [Parameterized Builds](https://github.com/evergreen-ci/evergreen/wiki/Parameterized-Builds)
 /// documentation for more information.
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct EvgParameter {
     /// Name of parameter.
     pub key: String,
@@ -28,7 +28,7 @@ pub struct EvgParameter {
 }
 
 /// Description of a module to include in a landscape.
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct EvgModule {
     /// Name of module being defined.
     pub name: String,
