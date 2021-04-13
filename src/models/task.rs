@@ -10,7 +10,7 @@ use crate::models::commands::EvgCommand;
 use serde::{Deserialize, Serialize};
 
 /// Description of a depedency for a task.
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct TaskDependency {
     /// Name of task that needs to be run.
     pub name: String,
