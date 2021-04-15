@@ -40,4 +40,8 @@ pub struct EvgTaskGroup {
     /// Commands to run in case of timeout.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub timeout: Option<Vec<EvgCommand>>,
+
+    /// Task tags for this task group.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub tags: Option<Vec<String>>,
 }
