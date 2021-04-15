@@ -8,7 +8,9 @@ use crate::models::commands::EvgCommand;
 use crate::models::task::EvgTask;
 use crate::models::variant::BuildVariant;
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
+use std::{collections::HashMap, error::Error};
+use yaml_merge_keys::merge_keys;
+use yaml_rust::{YamlEmitter, YamlLoader};
 
 /// Description of an evergreen parameter.
 ///
@@ -40,6 +42,13 @@ pub struct EvgModule {
     pub prefix: String,
 }
 
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(untagged)]
+pub enum FunctionDefinition {
+    SingleCommand(EvgCommand),
+    CommandList(Vec<EvgCommand>),
+}
+
 /// Description of an Evergreen Project.
 #[derive(Serialize, Deserialize, Debug)]
 pub struct EvgProject {
@@ -49,7 +58,7 @@ pub struct EvgProject {
     pub tasks: Vec<EvgTask>,
     /// Definitions of functions belonging to this landscape.
     #[serde(skip_serializing_if = "HashMap::is_empty")]
-    pub functions: HashMap<String, Vec<EvgCommand>>,
+    pub functions: HashMap<String, FunctionDefinition>,
     /// List of commands to run at the start of each task.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub pre: Option<Vec<EvgCommand>>,
@@ -101,5 +110,25 @@ impl Default for EvgProject {
             ignore: None,
             parameters: None,
         }
+    }
+}
+
+impl EvgProject {
+    /// Parse the given YAML string into an Evergreen Project.
+    pub fn from_yaml_str(yaml_contents: &str) -> Result<EvgProject, Box<dyn Error>> {
+        // Evergreen config can use merge-keys, which is not supported by
+        // serde-yaml, so we need to merge the keys first.
+        let raw = YamlLoader::load_from_str(&yaml_contents)?.remove(0);
+        let merged = merge_keys(raw)?;
+
+        let mut out_str = String::new();
+        {
+            let mut emitter = YamlEmitter::new(&mut out_str);
+            emitter.dump(&merged)?;
+        }
+
+        println!("{}", out_str);
+
+        Ok(serde_yaml::from_str(&out_str)?)
     }
 }

@@ -42,6 +42,7 @@ pub enum ParamValue {
     Bool(bool),
     String(String),
     Number(u64),
+    Float(f64),
     List(Vec<String>),
     Map(HashMap<String, String>),
     KeyValueList(Vec<KeyValueParam>),
