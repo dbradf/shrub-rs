@@ -6,11 +6,13 @@
 use crate::models::builtin::EvgCommandType;
 use crate::models::commands::EvgCommand;
 use crate::models::task::EvgTask;
+use crate::models::task_group::EvgTaskGroup;
 use crate::models::variant::BuildVariant;
 use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, error::Error};
 use yaml_merge_keys::merge_keys;
 use yaml_rust::{YamlEmitter, YamlLoader};
+
 
 /// Description of an evergreen parameter.
 ///
@@ -56,6 +58,8 @@ pub struct EvgProject {
     pub buildvariants: Vec<BuildVariant>,
     /// List of task definitions.
     pub tasks: Vec<EvgTask>,
+    /// List of task group definitions.
+    pub task_groups: Vec<EvgTaskGroup>,
     /// Definitions of functions belonging to this landscape.
     #[serde(skip_serializing_if = "HashMap::is_empty")]
     pub functions: HashMap<String, FunctionDefinition>,
@@ -98,6 +102,7 @@ impl Default for EvgProject {
         EvgProject {
             buildvariants: vec![],
             tasks: vec![],
+            task_groups: vec![],
             functions: Default::default(),
             pre: None,
             post: None,
@@ -126,8 +131,6 @@ impl EvgProject {
             let mut emitter = YamlEmitter::new(&mut out_str);
             emitter.dump(&merged)?;
         }
-
-        println!("{}", out_str);
 
         Ok(serde_yaml::from_str(&out_str)?)
     }
