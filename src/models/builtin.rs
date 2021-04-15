@@ -85,6 +85,14 @@ pub struct AttachArtifactsParams {
     /// Path to start process the files, relative to the working directory.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub prefix: Option<String>,
+
+    /// Don't fail if files are not found to attach.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub optional: Option<bool>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub ignore_artifacts_for_spawn: Option<bool>,
+
 }
 
 /// Parameters describing how to attach Evergreen test results format to task.
