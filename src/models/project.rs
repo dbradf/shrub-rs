@@ -59,7 +59,8 @@ pub struct EvgProject {
     /// List of task definitions.
     pub tasks: Vec<EvgTask>,
     /// List of task group definitions.
-    pub task_groups: Vec<EvgTaskGroup>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub task_groups: Option<Vec<EvgTaskGroup>>,
     /// Definitions of functions belonging to this landscape.
     #[serde(skip_serializing_if = "HashMap::is_empty")]
     pub functions: HashMap<String, FunctionDefinition>,
@@ -102,7 +103,7 @@ impl Default for EvgProject {
         EvgProject {
             buildvariants: vec![],
             tasks: vec![],
-            task_groups: vec![],
+            task_groups: None,
             functions: Default::default(),
             pre: None,
             post: None,
