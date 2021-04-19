@@ -48,3 +48,27 @@ pub enum ParamValue {
     KeyValueList(Vec<KeyValueParam>),
     S3CopyList(Vec<S3CopyFile>),
 }
+
+impl From<bool> for ParamValue {
+    fn from(item: bool) -> ParamValue {
+        ParamValue::Bool(item)
+    }
+}
+
+impl From<&str> for ParamValue {
+    fn from(item: &str) -> ParamValue {
+        ParamValue::String(item.to_string())
+    }
+}
+
+impl From<u64> for ParamValue {
+    fn from(item: u64) -> ParamValue {
+        ParamValue::Number(item)
+    }
+}
+
+impl From<f64> for ParamValue {
+    fn from(item: f64) -> ParamValue {
+        ParamValue::Float(item)
+    }
+}

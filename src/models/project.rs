@@ -9,10 +9,10 @@ use crate::models::task::EvgTask;
 use crate::models::task_group::EvgTaskGroup;
 use crate::models::variant::BuildVariant;
 use serde::{Deserialize, Serialize};
+use simple_error::bail;
 use std::{collections::HashMap, error::Error};
 use yaml_merge_keys::merge_keys;
 use yaml_rust::{YamlEmitter, YamlLoader};
-
 
 /// Description of an evergreen parameter.
 ///
@@ -44,10 +44,13 @@ pub struct EvgModule {
     pub prefix: String,
 }
 
+/// Definition of an Evergreen function.
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(untagged)]
 pub enum FunctionDefinition {
+    /// Function composed of a single Evergreen command.
     SingleCommand(EvgCommand),
+    /// Function composed of several Evergreen commands.
     CommandList(Vec<EvgCommand>),
 }
 
@@ -124,7 +127,11 @@ impl EvgProject {
     pub fn from_yaml_str(yaml_contents: &str) -> Result<EvgProject, Box<dyn Error>> {
         // Evergreen config can use merge-keys, which is not supported by
         // serde-yaml, so we need to merge the keys first.
-        let raw = YamlLoader::load_from_str(&yaml_contents)?.remove(0);
+        let mut raw = YamlLoader::load_from_str(&yaml_contents)?;
+        if raw.len() != 1 {
+            bail!("Expected 1 and only 1 yaml document")
+        }
+        let raw = raw.remove(0);
         let merged = merge_keys(raw)?;
 
         let mut out_str = String::new();
@@ -134,5 +141,26 @@ impl EvgProject {
         }
 
         Ok(serde_yaml::from_str(&out_str)?)
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn test_an_empty_document_fails() {
+        let document = "";
+
+        let result = EvgProject::from_yaml_str(document);
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn test_invalid_yaml_fails() {
+        let document = "garbage input";
+
+        let result = EvgProject::from_yaml_str(document);
+        assert!(result.is_err());
     }
 }

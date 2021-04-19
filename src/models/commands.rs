@@ -40,3 +40,9 @@ pub fn fn_call_with_params(name: &str, vars: HashMap<String, ParamValue>) -> Evg
         timeout_secs: None,
     })
 }
+
+impl From<&str> for EvgCommand {
+    fn from(item: &str) -> EvgCommand {
+        fn_call(item)
+    }
+}

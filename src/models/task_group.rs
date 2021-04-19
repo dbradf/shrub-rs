@@ -2,7 +2,6 @@ use serde::{Deserialize, Serialize};
 
 use super::{builtin::TimeoutValue, commands::EvgCommand};
 
-
 /// A group of tasks related tasks that can share hosts.
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct EvgTaskGroup {
