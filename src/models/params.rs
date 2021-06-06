@@ -1,5 +1,6 @@
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
+use core::fmt;
+use std::{collections::HashMap, fmt::{Display, Formatter}};
 
 /// AWS S3 Location description.
 #[derive(Serialize, Deserialize, Debug, Clone)]
@@ -47,6 +48,22 @@ pub enum ParamValue {
     Map(HashMap<String, String>),
     KeyValueList(Vec<KeyValueParam>),
     S3CopyList(Vec<S3CopyFile>),
+}
+
+impl Display for ParamValue {
+    fn fmt(&self, f: &mut Formatter) -> fmt::Result {
+        use ParamValue::*;
+        match self {
+            Bool(b) => write!(f, "{}", b),
+            String(s) => write!(f, "{}", s),
+            Number(n) => write!(f, "{}", n),
+            Float(d) => write!(f, "{}", d),
+            List(l) => write!(f, "{}", l.join(", ")),
+            Map(_) => write!(f, "map"),
+            KeyValueList(_) => write!(f, "kvs"),
+            S3CopyList(_) => write!(f, "s3"),
+        }
+    }
 }
 
 impl From<bool> for ParamValue {
