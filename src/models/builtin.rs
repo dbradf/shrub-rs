@@ -195,7 +195,8 @@ pub struct GenerateTasksParams {
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct GitGetProjectParams {
     /// Directory to clone repository into.
-    pub directory: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub directory: Option<String>,
 
     /// Token to use to clone instead of ssh key on host.
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -315,7 +316,8 @@ pub struct HostCreateParams {
     pub region: Option<String>,
 
     /// List of security groups to set.
-    pub security_group_ids: Vec<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub security_group_ids: Option<Vec<String>>,
 
     /// Swap a spot instance.
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -777,7 +779,7 @@ pub enum EvgCommandSpec {
 
     /// Clone the tracked landscape and apply revision associated with task.
     #[serde(rename = "git.get_project")]
-    GitGetProject(GitGetProjectParams),
+    GitGetProject(Option<GitGetProjectParams>),
 
     /// Parse gotest results and attach them to the task.
     #[serde(rename = "gotest.parse_files")]
@@ -846,5 +848,5 @@ pub struct BuiltInCommand {
     pub command_type: Option<EvgCommandType>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    params_yaml: Option<String>,
+    pub params_yaml: Option<String>,
 }

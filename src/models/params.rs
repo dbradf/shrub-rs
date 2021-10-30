@@ -1,6 +1,9 @@
-use serde::{Deserialize, Serialize};
 use core::fmt;
-use std::{collections::HashMap, fmt::{Display, Formatter}};
+use serde::{Deserialize, Serialize};
+use std::{
+    collections::HashMap,
+    fmt::{Display, Formatter},
+};
 
 /// AWS S3 Location description.
 #[derive(Serialize, Deserialize, Debug, Clone)]
