@@ -45,7 +45,7 @@ pub struct EvgModule {
 }
 
 /// Definition of an Evergreen function.
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(untagged)]
 pub enum FunctionDefinition {
     /// Function composed of a single Evergreen command.
