@@ -30,7 +30,7 @@ pub struct TaskRef {
 }
 
 /// Definition of an Evergreen task.
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct EvgTask {
     /// Name of task being defined.
     pub name: String,

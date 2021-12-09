@@ -142,6 +142,25 @@ impl EvgProject {
 
         Ok(serde_yaml::from_str(&out_str)?)
     }
+
+    /// Build a map of the defined build variants.
+    pub fn build_variant_map(&self) -> HashMap<String, &BuildVariant> {
+        let mut map = HashMap::with_capacity(self.buildvariants.len());
+        self.buildvariants.iter().for_each(|bv| {
+            map.insert(bv.name.to_string(), bv);
+        });
+        map
+    }
+
+    /// Build a map of the defined tasks.
+    pub fn task_def_map(&self) -> HashMap<String, &EvgTask> {
+        let mut map = HashMap::with_capacity(self.tasks.len());
+        self.tasks.iter().for_each(|t| {
+            map.insert(t.name.to_string(), t);
+        });
+        map
+
+    }
 }
 
 #[cfg(test)]
