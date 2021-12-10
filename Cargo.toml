@@ -1,7 +1,7 @@
 [package]
 name = "shrub-rs"
 description = "Library for working with Evergreen Project configurations."
-version = "0.3.8"
+version = "0.4.0"
 authors = ["David Bradford <david.bradford@mongodb.com>"]
 edition = "2018"
 license = "Apache-2.0"

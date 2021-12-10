@@ -27,6 +27,9 @@ pub struct TaskRef {
     /// List of distros that task should be run on.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub distros: Option<Vec<String>>,
+    /// Should task be scheduled when created.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub activate: Option<bool>,
 }
 
 /// Definition of an Evergreen task.
@@ -57,10 +60,11 @@ impl EvgTask {
     /// Get a reference of this task to include in a build variant.
     ///
     /// * `distros`: List of distros this task should run on.
-    pub fn get_reference(&self, distros: Option<Vec<String>>) -> TaskRef {
+    pub fn get_reference(&self, distros: Option<Vec<String>>, activate: Option<bool>) -> TaskRef {
         TaskRef {
             name: self.name.clone(),
             distros,
+            activate,
         }
     }
 }
