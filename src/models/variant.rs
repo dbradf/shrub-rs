@@ -44,6 +44,10 @@ pub struct BuildVariant {
     /// List of modules that should be included in tasks for this build variant.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub modules: Option<Vec<String>>,
+
+    /// Should created tasks for this build variant be scheduled.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub activate: Option<bool>,
 }
 
 impl Default for BuildVariant {
@@ -58,6 +62,7 @@ impl Default for BuildVariant {
             expansions: None,
             stepback: None,
             modules: None,
+            activate: None,
         }
     }
 }
