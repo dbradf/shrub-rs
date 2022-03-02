@@ -6,7 +6,7 @@ use std::{
 };
 
 /// AWS S3 Location description.
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
 pub struct S3Location {
     /// S3 bucket.
     pub bucket: String,
@@ -15,7 +15,7 @@ pub struct S3Location {
 }
 
 /// Description of how to copy an AWS S3 file.
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
 pub struct S3CopyFile {
     /// Location of S3 file to copy.
     pub source: S3Location,
@@ -32,7 +32,7 @@ pub struct S3CopyFile {
 }
 
 /// Key-Value pair used to create a parameter map.
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
 pub struct KeyValueParam {
     /// Key of Key-Value pair.
     pub key: String,
@@ -40,7 +40,7 @@ pub struct KeyValueParam {
     pub value: String,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
 #[serde(untagged)]
 pub enum ParamValue {
     Bool(bool),
