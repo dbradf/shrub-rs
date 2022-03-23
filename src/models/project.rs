@@ -55,7 +55,7 @@ pub enum FunctionDefinition {
 }
 
 /// Description of an Evergreen Project.
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Default)]
 pub struct EvgProject {
     /// List of build variants belonging to this landscape.
     pub buildvariants: Vec<BuildVariant>,
@@ -101,33 +101,12 @@ pub struct EvgProject {
     pub parameters: Option<Vec<EvgParameter>>,
 }
 
-impl Default for EvgProject {
-    fn default() -> Self {
-        EvgProject {
-            buildvariants: vec![],
-            tasks: vec![],
-            task_groups: None,
-            functions: Default::default(),
-            pre: None,
-            post: None,
-            timeout: None,
-            modules: None,
-            stepback: None,
-            pre_error_fails_task: None,
-            oom_tracker: None,
-            command_type: None,
-            ignore: None,
-            parameters: None,
-        }
-    }
-}
-
 impl EvgProject {
     /// Parse the given YAML string into an Evergreen Project.
     pub fn from_yaml_str(yaml_contents: &str) -> Result<EvgProject, Box<dyn Error>> {
         // Evergreen config can use merge-keys, which is not supported by
         // serde-yaml, so we need to merge the keys first.
-        let mut raw = YamlLoader::load_from_str(&yaml_contents)?;
+        let mut raw = YamlLoader::load_from_str(yaml_contents)?;
         if raw.len() != 1 {
             bail!("Expected 1 and only 1 yaml document")
         }
@@ -159,7 +138,6 @@ impl EvgProject {
             map.insert(t.name.to_string(), t);
         });
         map
-
     }
 }
 

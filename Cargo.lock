@@ -72,7 +72,7 @@ dependencies = [
 
 [[package]]
 name = "shrub-rs"
-version = "0.4.2"
+version = "0.5.0"
 dependencies = [
  "serde",
  "serde_yaml",
@@ -126,9 +126,9 @@ checksum = "f7fe0bb3479651439c9112f72b6c505038574c9fbb575ed1bf3b797fa39dd564"
 
 [[package]]
 name = "yaml-merge-keys"
-version = "0.4.1"
+version = "0.5.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fd236a7dc9bb598f349fe4a8754f49181fee50284daa15cd1ba652d722280004"
+checksum = "af47d205071caaef70ebce5e04e1d88eba944833f8a6626dacdda700f86c285a"
 dependencies = [
  "lazy_static",
  "thiserror",

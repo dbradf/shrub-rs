@@ -581,7 +581,7 @@ pub struct ShellExecParams {
     pub redirect_standard_error_to_output: Option<bool>,
 }
 
-/// Parameters commont to SubprocessExec and SubprocessScripting.
+/// Parameters common to SubprocessExec and SubprocessScripting.
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct SubprocessExecutionConfig {
     /// If true, does not log any shell output during execution.
@@ -767,7 +767,7 @@ pub enum EvgCommandSpec {
 
     /// Update the task's expansions at runtime.
     #[serde(rename = "expansions.update")]
-    ExpansionsUpdate(ExpansionsUpdateParams),
+    ExpansionsUpdate(Option<ExpansionsUpdateParams>),
 
     /// Write the task's expansions to a file.
     #[serde(rename = "expansions.write")]

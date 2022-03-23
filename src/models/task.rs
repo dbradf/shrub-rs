@@ -38,7 +38,7 @@ pub struct EvgTask {
     /// Name of task being defined.
     pub name: String,
     /// List of command that make up the task.
-    pub commands: Vec<EvgCommand>,
+    pub commands: Option<Vec<EvgCommand>>,
     /// List of other tasks that need to be completed before this is done.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub depends_on: Option<Vec<TaskDependency>>,
@@ -73,7 +73,7 @@ impl Default for EvgTask {
     fn default() -> Self {
         EvgTask {
             name: "".to_string(),
-            commands: vec![],
+            commands: Some(vec![]),
             depends_on: None,
             exec_timeout_secs: None,
             tags: None,
